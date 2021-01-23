@@ -53,5 +53,10 @@ class TestLCDProxy(unittest.TestCase):
         p = LCDProxy(chars=5,rows=1,init_char='A') #pylint: disable=undefined-variable
         self.assertRaises(InvalidPosition,p.get_char,[5,0]) #pylint: disable=undefined-variable
 
+    def test_clear(self):
+        p = LCDProxy(chars=5,rows=1,init_char='A') #pylint: disable=undefined-variable
+        p.clear()
+        self.assertEqual(str(p),'         ')
+
 if __name__ == '__main__':
     unittest.main()

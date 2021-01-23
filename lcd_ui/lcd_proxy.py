@@ -28,6 +28,9 @@ class LCDProxy(object):
         except InvalidPosition:
             raise WillNotFitDisplay
 
+    def clear(self):
+        self.lcd = [bytearray(' '*self.chars,encoding='utf-8') for row in range(self.rows)]
+
     def get_char(self,pos):
         try:
             return chr(self.lcd[pos[0]][pos[1]])
