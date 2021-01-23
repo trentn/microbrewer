@@ -1,3 +1,9 @@
+class InvalidPosition(Exception):
+    pass
+
+class WillNotFitDisplay(Exception):
+    pass
+
 class LCDProxy(object):
     def __init__(self, chars=16, rows=2, init_char=' '):
         self.chars = chars
@@ -5,12 +11,18 @@ class LCDProxy(object):
         self.lcd = [bytearray(init_char*self.chars,encoding='utf-8') for row in range(self.rows)]
 
     def write(self,char,pos):
-        self.lcd[pos[0]][pos[1]] = ord(char)
+        try:
+            self.lcd[pos[0]][pos[1]] = ord(char)
+        except IndexError:
+            raise InvalidPosition
     
     def write_word(self,word,start_pos):
-        for char in word:
-            self.write(char,start_pos)
-            start_pos[1] = start_pos[1]+1
+        try:
+            for char in word:
+                self.write(char,start_pos)
+                start_pos[1] = start_pos[1]+1
+        except InvalidPosition:
+            raise WillNotFitDisplay
 
     def update(self):
         #TODO: write to lcd
