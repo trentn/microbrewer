@@ -1,7 +1,18 @@
 class InvalidDirection(Exception):
     pass
 
-class Menu(object):
+
+class UI_Element(object):
+    def scroll(self,dir):
+        raise NotImplementedError
+
+    def cycle(self):
+        raise NotImplementedError
+
+    def select(self):
+        raise NotImplementedError
+
+class Menu(UI_Element):
     def __init__(self,entries,num_lines=2):
         self._entries = entries
         self._num_lines = num_lines
@@ -31,6 +42,9 @@ class Menu(object):
                 self.scroll_display('down')
         else:
             raise InvalidDirection
+
+    def cycle(self):
+        pass
 
     def select(self):
         return self._entries[self._display_start+self._select_line][1]
