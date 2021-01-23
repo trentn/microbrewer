@@ -18,17 +18,24 @@ class Menu(object):
         else:
             raise InvalidDirection
 
-    def scroll_select(self,dir):
+    def scroll(self,dir):
         if dir == 'up':
             if self._select_line > 0:
                 self._select_line = (self._select_line - 1)
+            else:
+                self.scroll_display('up')
         elif dir == 'down':
             if self._select_line < self._num_lines-1:
                 self._select_line = (self._select_line + 1)
+            else:
+                self.scroll_display('down')
         else:
             raise InvalidDirection
 
+    def select(self):
+        return self._entries[self._display_start+self._select_line][1]
+
     def get_display(self):
         lines = self._entries[self._display_start:self._display_start+self._num_lines]
-        lines = [">"+line if i==self._select_line else " "+line for i,line in enumerate(lines)]
+        lines = [">"+line[0] if i==self._select_line else " "+line[0] for i,line in enumerate(lines)]
         return lines
