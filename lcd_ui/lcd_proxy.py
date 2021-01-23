@@ -16,11 +16,15 @@ class LCDProxy(object):
         except IndexError:
             raise InvalidPosition
     
-    def write_word(self,word,start_pos):
+    def write_word(self,word,start_pos,wrap=False):
         try:
             for char in word:
                 self.write(char,start_pos)
                 start_pos[1] = start_pos[1]+1
+                if wrap:
+                    if start_pos[1] == self.chars:
+                        start_pos[1] = 0
+                        start_pos[0] = start_pos[0]+1
         except InvalidPosition:
             raise WillNotFitDisplay
 

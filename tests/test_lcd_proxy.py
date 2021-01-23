@@ -31,9 +31,19 @@ class TestLCDProxy(unittest.TestCase):
         p.write_word('ABCDE',[0,0])
         self.assertEqual(str(p),intended_output)
 
+    def test_write_word_wrap(self):
+        p = LCDProxy(chars=5,rows=2) #pylint: disable=undefined-variable
+        intended_output = 'A B C D E\nF G H I J'
+        p.write_word('ABCDEFGHIJ',[0,0],wrap=True)
+        self.assertEqual(str(p),intended_output)
+
     def test_write_word_error(self):
         p = LCDProxy(chars=5,rows=1) #pylint: disable=undefined-variable
         self.assertRaises(WillNotFitDisplay,p.write_word,'ABCDEF',[0,0]) #pylint: disable=undefined-variable
+
+    def test_write_word_wrap_error(self):
+        p = LCDProxy(chars=5,rows=2) #pylint: disable=undefined-variable
+        self.assertRaises(WillNotFitDisplay,p.write_word,'ABCDEF',[1,0],wrap=True) #pylint: disable=undefined-variable
 
     def test_get_char(self):
         p = LCDProxy(chars=5,rows=1,init_char='A') #pylint: disable=undefined-variable
