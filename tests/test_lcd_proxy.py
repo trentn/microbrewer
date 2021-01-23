@@ -35,6 +35,13 @@ class TestLCDProxy(unittest.TestCase):
         p = LCDProxy(chars=5,rows=1) #pylint: disable=undefined-variable
         self.assertRaises(WillNotFitDisplay,p.write_word,'ABCDEF',[0,0]) #pylint: disable=undefined-variable
 
+    def test_get_char(self):
+        p = LCDProxy(chars=5,rows=1,init_char='A') #pylint: disable=undefined-variable
+        self.assertEqual(p.get_char([0,0]),'A')
+    
+    def test_get_char_error(self):
+        p = LCDProxy(chars=5,rows=1,init_char='A') #pylint: disable=undefined-variable
+        self.assertRaises(InvalidPosition,p.get_char,[5,0]) #pylint: disable=undefined-variable
 
 if __name__ == '__main__':
     unittest.main()

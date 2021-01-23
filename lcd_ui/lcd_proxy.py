@@ -24,6 +24,12 @@ class LCDProxy(object):
         except InvalidPosition:
             raise WillNotFitDisplay
 
+    def get_char(self,pos):
+        try:
+            return chr(self.lcd[pos[0]][pos[1]])
+        except IndexError:
+            raise InvalidPosition
+
     def update(self):
         #TODO: write to lcd
         pass
