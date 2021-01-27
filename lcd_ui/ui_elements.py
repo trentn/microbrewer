@@ -37,11 +37,14 @@ class DynamicContent(Content):
         super().__init__(content)
         self.init_content = content
 
-    def run(self,event_queue):
+    def run(self,event_queue,interval=1):
         while self.menu.is_displayed:
-            self.content = "%s %d" % (self.init_content, random.randrange(10))
+            self.update_content()
             event_queue.put({'type':'display_update'})
-            time.sleep(10)
+            time.sleep(interval)
+
+    def update_content(self):
+        self.content = "%s %d" % (self.init_content, random.randrange(10))
 
 class Menu(UI_Element):
     def __init__(self,entries,num_lines=2):
