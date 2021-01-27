@@ -1,4 +1,6 @@
-from lcd_ui import LCDProxy, Menu
+import queue
+from .lcd_proxy import LCDProxy
+from .ui_elements import Menu, DisplayContent
 
 '''
 Menu
@@ -15,7 +17,7 @@ Menu
 class UI(object):
     def _build_ui(self):  
         wifi_display_entries = [
-            ("SSID:",None),
+            (DisplayContent("SSID:"),None),
             ("IP:",None)
         ]
         wifi_display_menu = Menu(wifi_display_entries)
@@ -53,6 +55,28 @@ class UI(object):
         self.prev_menus = []
         self.current_elem = self._build_ui()
         self.update_display()
+        self.event_queue = queue.Queue()
+
+    def run(self):
+        def print_display():
+            print() 
+            print(self.display)
+
+        print_display()
+        
+        i = None
+        while i != 'quit':
+            e = self.event_queue.get()
+            if e['type'] == 'input':
+                i = e['val']
+                if e['val'] == 'quit':
+                    continue
+                self.handle_input(i)
+                self.update_display()
+            if e['type'] == 'display_update':
+                self.update_display()
+
+            print_display()
     
     def handle_input(self,input):
         if input == 'up':
@@ -82,20 +106,3 @@ class UI(object):
         if next_menu:
             self.prev_menus.append(self.current_elem)
             self.current_elem = next_menu
-
-
-if __name__ == '__main__':
-    ui = UI()
-
-    def print_display():
-        print() 
-        print(ui.display)
-           
-
-    print_display()
-    i = input()
-    while i != 'quit':
-        ui.handle_input(i)
-        ui.update_display()
-        print_display()
-        i = input()
