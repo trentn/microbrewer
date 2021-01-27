@@ -1,6 +1,6 @@
 import queue
 from .lcd_proxy import LCDProxy
-from .ui_elements import Menu, DisplayContent
+from .ui_elements import Menu, Content, DynamicContent
 
 '''
 Menu
@@ -17,36 +17,36 @@ Menu
 class UI(object):
     def _build_ui(self):  
         wifi_display_entries = [
-            (DisplayContent("SSID:"),None),
-            ("IP:",None)
+            (Content("SSID:"),None),
+            (Content("IP:"),None)
         ]
         wifi_display_menu = Menu(wifi_display_entries)
 
         wifi_config_entries = [
-            ("SSID:",None),
-            ("Pwd:",None)
+            (Content("SSID:"),None),
+            (Content("Pwd:"),None)
         ]
         wifi_config_menu = Menu(wifi_config_entries)
         
 
         wifi_main_entries = [
-            ("Display",wifi_display_menu),
-            ("Configure",wifi_config_menu)
+            (Content("Display"),wifi_display_menu),
+            (Content("Configure"),wifi_config_menu)
         ]
         wifi_main_menu = Menu(wifi_main_entries)
 
 
         temp_main_entries = [
-            ("Current:",None),
-            ("Target:",None)
+            (DynamicContent("Current:"),None),
+            (Content("Target:"),None)
         ]
         temp_main_menu = Menu(temp_main_entries)
 
 
         main_menu_entries = [
-            ("Temperature",temp_main_menu),
-            ("Wifi Settings",wifi_main_menu),
-            ("Poweroff",None)
+            (Content("Temperature"),temp_main_menu),
+            (Content("Wifi Settings"),wifi_main_menu),
+            (Content("Poweroff"),None)
         ]
         return Menu(main_menu_entries)
 
@@ -81,8 +81,10 @@ class UI(object):
     def handle_input(self,input):
         if input == 'up':
             self.current_elem.scroll('up')
+        
         elif input == 'down':
             self.current_elem.scroll('down')
+        
         elif input == 'select':
             if isinstance(self.current_elem,Menu):
                 self.goto_next_menu()
@@ -91,9 +93,9 @@ class UI(object):
 
         elif input == 'cycle':
             self.current_elem.cycle()
+        
         elif input == 'back':
-            if self.prev_menus:
-                self.current_elem = self.prev_menus.pop()
+            self.go_back_menu()
 
     def update_display(self):
         self.display.clear()
@@ -106,3 +108,9 @@ class UI(object):
         if next_menu:
             self.prev_menus.append(self.current_elem)
             self.current_elem = next_menu
+            self.current_elem.start(self.event_queue)
+
+    def go_back_menu(self):
+        if self.prev_menus:
+                self.current_elem.stop()
+                self.current_elem = self.prev_menus.pop()
