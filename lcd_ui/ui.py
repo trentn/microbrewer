@@ -16,7 +16,8 @@ class UI(object):
             print() 
             print(self.display)
 
-        print_display()
+        if(self.output_console):
+            print_display()
         
         i = None
         while i != 'quit':
