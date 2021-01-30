@@ -68,16 +68,13 @@ class DisplayTemp(DynamicContent):
                 self.content = self.init_content + self.dynamic_content
                 event_queue.put({'type':'display_update'})
 
-# class DisplayIP(DynamicContent):
-#     def run(self, event_queue, interval=0.25):
-#         try:
-#             iface = netifaces.gateways()['default'][netifaces.AF_INET][1]
-#             self.ip = netifaces.ifaddresses(iface)[netifaces.AF_INET][0]['addr']
-#         except NameError:
-#             self.ip = '000.000.000.000'
-#         super().run(event_queue,interval)
+class DisplayIP(ScrollingContent):
+    def run(self, event_queue, interval=0.25):
+        super().run(event_queue,interval)
 
-#     def update_content(self, event_queue):
-#         avail_chars = 13
-#         self.dynamic_content = 
-#         event_queue.put({'type':'display_update'})
+    def set_dynamic_content(self):
+        try:
+            iface = netifaces.gateways()['default'][netifaces.AF_INET][1]
+            self.dynamic_content = netifaces.ifaddresses(iface)[netifaces.AF_INET][0]['addr']
+        except NameError:
+            self.dynamic_content = '000.000.000.000' 
