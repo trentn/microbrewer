@@ -4,7 +4,7 @@ from lcd_ui import * #pylint: disable=import-error
 class TestLCDProxy(unittest.TestCase):
     def test_init(self):
         p = LCDProxy() #pylint: disable=undefined-variable
-        self.assertEqual(p.lcd, [bytearray(' '*16,encoding='utf-8'),bytearray(' '*16,encoding='utf-8')])
+        self.assertEqual(p.buffer, [bytearray(' '*16,encoding='utf-8'),bytearray(' '*16,encoding='utf-8')])
 
     def test_str_repr(self):
         p = LCDProxy(chars=5, rows=1, init_char='A') #pylint: disable=undefined-variable
