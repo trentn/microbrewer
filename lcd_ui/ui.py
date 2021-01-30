@@ -1,6 +1,6 @@
 import queue
 from .lcd_proxy import LCDProxy
-from .ui_elements import Menu, Content, DynamicContent
+from .ui_elements import Menu, Content, DisplayFileLine
 
 '''
 Menu
@@ -37,7 +37,7 @@ class UI(object):
 
 
         temp_main_entries = [
-            (DynamicContent("Current:"),None),
+            (DisplayFileLine("Current:",'./testfile'),None),
             (Content("Target:"),None)
         ]
         temp_main_menu = Menu(temp_main_entries)
