@@ -18,7 +18,7 @@ class LCDProxy(object):
         except IndexError:
             raise InvalidPosition
     
-    def write_word(self,word,wrap=False):
+    def write_string(self,word,wrap=False):
         try:
             for char in word:
                 self.write(char)
