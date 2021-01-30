@@ -1,3 +1,4 @@
+from lcd_ui.lcd_proxy import LCDProxy
 import queue
 from .ui_elements import Menu
 
@@ -27,8 +28,8 @@ class UI(object):
                 self.update_display()
             if e['type'] == 'display_update':
                 self.update_display()
-
-            print_display()
+            if(isinstance(self.display, LCDProxy)):
+                print_display()
     
     def handle_input(self,input):
         if input == 'up':
