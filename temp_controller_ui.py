@@ -14,8 +14,8 @@ Menu
 
 def build_ui():  
     wifi_display_entries = [
-        (Content("SSID:"),None),
-        (DisplayIP("IP:"),None)
+        (Content("SSID: "),None),
+        (DisplayIP("IP: "),None)
     ]
     wifi_display_menu = Menu(wifi_display_entries)
 
@@ -34,8 +34,8 @@ def build_ui():
 
 
     temp_main_entries = [
-        (DisplayTemp("Current:",'./dummyfile'),None),
-        (Content("Target:"),None)
+        (DisplayTemp("Current: ",'./dummyfile'),None),
+        (Content("Target: "),None)
     ]
     temp_main_menu = Menu(temp_main_entries)
 
