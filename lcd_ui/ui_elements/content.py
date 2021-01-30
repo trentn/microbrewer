@@ -1,6 +1,11 @@
 from abc import abstractmethod
 import time
 
+try:
+    import netifaces
+except ImportError:
+    print("Import netifaces failed")
+
 class Content(object):
     def __init__(self, content):
         self.content = content
@@ -27,6 +32,29 @@ class DynamicContent(Content):
     def update_content(self, event_queue):
         raise NotImplementedError
 
+class ScrollingContent(DynamicContent):
+    def __init__(self, content, line_len=16):
+        super().__init__(content)
+        self.avail_chars = line_len-len(self.init_content)-1
+        self.current_start = 0
+
+    def run(self,event_queue,interval=0.25):
+        print("running???")
+        self.set_dynamic_content()
+        super().run(event_queue,interval=interval)
+
+    def update_content(self, event_queue):
+        extra_chars = len(self.dynamic_content)-self.avail_chars
+        self.content = self.init_content + self.dynamic_content[self.current_start:self.current_start+self.avail_chars]
+        print(len(self.content))
+        print(self.content)
+        self.current_start = (self.current_start + 1)%extra_chars
+        event_queue.put({'type':'display_update'})
+
+    def set_dynamic_content(self):
+        self.dynamic_content = "SOMETHING RATHER LONG"
+        
+
 class DisplayTemp(DynamicContent):
     def __init__(self,content,filename):
         super().__init__(content)
@@ -43,3 +71,16 @@ class DisplayTemp(DynamicContent):
                 self.content = self.init_content + self.dynamic_content
                 event_queue.put({'type':'display_update'})
 
+# class DisplayIP(DynamicContent):
+#     def run(self, event_queue, interval=0.25):
+#         try:
+#             iface = netifaces.gateways()['default'][netifaces.AF_INET][1]
+#             self.ip = netifaces.ifaddresses(iface)[netifaces.AF_INET][0]['addr']
+#         except NameError:
+#             self.ip = '000.000.000.000'
+#         super().run(event_queue,interval)
+
+#     def update_content(self, event_queue):
+#         avail_chars = 13
+#         self.dynamic_content = 
+#         event_queue.put({'type':'display_update'})

@@ -1,4 +1,4 @@
-from lcd_ui import Menu, Content, DisplayTemp
+from lcd_ui import Menu, Content, DisplayTemp, ScrollingContent
 
 '''
 Menu
@@ -15,13 +15,13 @@ Menu
 def build_ui():  
     wifi_display_entries = [
         (Content("SSID:"),None),
-        (Content("IP:"),None)
+        (ScrollingContent("Test:"),None)
     ]
     wifi_display_menu = Menu(wifi_display_entries)
 
     wifi_config_entries = [
-        (Content("SSID:"),None),
-        (Content("Pwd:"),None)
+        (Content("Set SSID"),None),
+        (Content("Set Pwd"),None)
     ]
     wifi_config_menu = Menu(wifi_config_entries)
     
