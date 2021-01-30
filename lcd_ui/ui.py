@@ -3,12 +3,13 @@ import queue
 from .ui_elements import Menu
 
 class UI(object):
-    def __init__(self, root_elem, display):
+    def __init__(self, root_elem, display, output_console=False):
         self.display = display
         self.prev_menus = []
         self.current_elem = root_elem
         self.update_display()
         self.event_queue = queue.Queue()
+        self.output_console = output_console
 
     def run(self):
         def print_display():
@@ -28,7 +29,7 @@ class UI(object):
                 self.update_display()
             if e['type'] == 'display_update':
                 self.update_display()
-            if(isinstance(self.display, LCDProxy)):
+            if(self.output_console):
                 print_display()
     
     def handle_input(self,input):

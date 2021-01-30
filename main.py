@@ -28,13 +28,15 @@ if __name__ == '__main__':
 
     if args.console or not on_rpi:
         lcd = None
+        output_console = True
     else:
         lcd = CharLCD(numbering_mode=GPIO.BCM,cols=16,rows=2,pin_rs=26,pin_e=19,pins_data=[13,6,5,12])
-    
+        output_console = False
+        
     display = LCDProxy(lcd=lcd)
 
     temp_controller_ui = build_ui()
-    ui = UI(temp_controller_ui,display)
+    ui = UI(temp_controller_ui,display,output_console)
 
     ui_t = threading.Thread(target=ui.run)
     input_t = threading.Thread(target=input_thread, args=(ui.event_queue,),daemon=True)
