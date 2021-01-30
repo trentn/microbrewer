@@ -1,6 +1,5 @@
 import queue
-from .lcd_proxy import LCDProxy
-from .ui_elements import Menu, Content, DisplayFileLine
+from .ui_elements import Menu
 
 class UI(object):
     def __init__(self, root_elem, display):
