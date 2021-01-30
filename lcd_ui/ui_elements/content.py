@@ -38,14 +38,14 @@ class ScrollingContent(DynamicContent):
         self.avail_chars = line_len-len(self.init_content)-1
         self.current_start = 0
 
-    def run(self,event_queue,interval=0.4):
+    def run(self,event_queue,interval=1):
         self.set_dynamic_content()
         super().run(event_queue,interval=interval)
 
     def update_content(self, event_queue):
         extra_chars = len(self.dynamic_content)-self.avail_chars
         self.content = self.init_content + self.dynamic_content[self.current_start:self.current_start+self.avail_chars]
-        self.current_start = (self.current_start + 1)%max(extra_chars,1)
+        self.current_start = (self.current_start + 1)%(extra_chars+1)
         event_queue.put({'type':'display_update'})
 
     def set_dynamic_content(self):
@@ -69,8 +69,8 @@ class DisplayTemp(DynamicContent):
                 event_queue.put({'type':'display_update'})
 
 class DisplayIP(ScrollingContent):
-    def run(self, event_queue, interval=0.25):
-        super().run(event_queue,interval)
+    def run(self, event_queue):
+        super().run(event_queue)
 
     def set_dynamic_content(self):
         try:
