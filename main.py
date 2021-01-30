@@ -27,10 +27,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.console or not on_rpi:
-        display = LCDProxy()
+        lcd = None
     else:
-        display = CharLCD(numbering_mode=GPIO.BCM,cols=16,rows=2,pin_rs=26,pin_e=19,pins_data=[13,6,5,12])
+        lcd = CharLCD(numbering_mode=GPIO.BCM,cols=16,rows=2,pin_rs=26,pin_e=19,pins_data=[13,6,5,12])
     
+    display = LCDProxy(lcd=lcd)
 
     temp_controller_ui = build_ui()
     ui = UI(temp_controller_ui,display)

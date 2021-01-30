@@ -5,15 +5,17 @@ class WillNotFitDisplay(Exception):
     pass
 
 class LCDProxy(object):
-    def __init__(self, chars=16, rows=2, init_char=' '):
+    def __init__(self, lcd=None, chars=16, rows=2, init_char=' '):
         self.chars = chars
         self.rows = rows
-        self.lcd = [bytearray(init_char*self.chars,encoding='utf-8') for row in range(self.rows)]
+        self.buffer = [bytearray(init_char*self.chars,encoding='utf-8') for row in range(self.rows)]
+        self.prev_buffer = self.buffer.copy()
         self.cursor_pos = (0,0)
+        self.lcd = lcd
     
     def write(self,char):
         try:
-            self.lcd[self.cursor_pos[0]][self.cursor_pos[1]] = ord(char)
+            self.buffer[self.cursor_pos[0]][self.cursor_pos[1]] = ord(char)
             self.cursor_pos = (self.cursor_pos[0],self.cursor_pos[1]+1)
         except IndexError:
             raise InvalidPosition
@@ -29,21 +31,28 @@ class LCDProxy(object):
             raise WillNotFitDisplay
 
     def clear(self):
-        self.lcd = [bytearray(' '*self.chars,encoding='utf-8') for row in range(self.rows)]
+        self.buffer = [bytearray(' '*self.chars,encoding='utf-8') for row in range(self.rows)]
 
     def get_char(self,pos):
         try:
-            return chr(self.lcd[pos[0]][pos[1]])
+            return chr(self.buffer[pos[0]][pos[1]])
         except IndexError:
             raise InvalidPosition
 
     def update(self):
-        #TODO: write to lcd
-        pass
+        if self.lcd:
+            for row in range(self.rows):
+                for char in range(self.chars):
+                    if self.buffer[row][char] != self.prev_buffer[row][char]:
+                        self.lcd.cursor_pos = (row,char)
+                        self.lcd.write(self.buffer[row][char])
+                        self.prev_buffer[row][char]=self.buffer[row][char]
+        
+        
 
     def __str__(self):
         string = ''
         for row in range(self.rows):
-            line = ' '.join([chr(b) for b in self.lcd[row]]) + '\n'
+            line = ' '.join([chr(b) for b in self.buffer[row]]) + '\n'
             string = string + line
         return string[:-1]

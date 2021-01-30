@@ -56,6 +56,7 @@ class UI(object):
         for i,line in enumerate(lines):
             self.display.cursor_pos = (i,0)
             self.display.write_string(line)
+        self.display.update()
 
     def goto_next_menu(self):
         next_menu = self.current_elem.select()
