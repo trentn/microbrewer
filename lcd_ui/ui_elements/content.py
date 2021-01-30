@@ -16,15 +16,15 @@ class DynamicContent(Content):
     def __init__(self,content):
         super().__init__(content)
         self.init_content = content
+        self.dynamic_content = ""
 
     def run(self,event_queue,interval=1):
         while self.menu.is_displayed:
-            self.update_content()
-            event_queue.put({'type':'display_update'})
+            self.update_content(event_queue)
             time.sleep(interval)
 
     @abstractmethod
-    def update_content(self):
+    def update_content(self, event_queue):
         raise NotImplementedError
 
 class DisplayFileLine(DynamicContent):
@@ -32,9 +32,12 @@ class DisplayFileLine(DynamicContent):
         super().__init__(content)
         self.filename = filename
 
-    def update_content(self):
+    def update_content(self,event_queue):
         with open(self.filename, 'r') as f:
             line = f.readline()
             if line[-1] == '\n':
                 line = line[:-1]
-            self.content = self.init_content + line
+            if line != self.dynamic_content:
+                self.dynamic_content = line
+                self.content = self.init_content + self.dynamic_content
+                event_queue.put({'type':'display_update'})
