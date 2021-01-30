@@ -3,8 +3,8 @@ from .lcd_proxy import LCDProxy
 from .ui_elements import Menu, Content, DisplayFileLine
 
 class UI(object):
-    def __init__(self, root_elem):
-        self.display = LCDProxy()
+    def __init__(self, root_elem, display):
+        self.display = display
         self.prev_menus = []
         self.current_elem = root_elem
         self.update_display()
@@ -54,7 +54,7 @@ class UI(object):
         self.display.clear()
         lines = self.current_elem.get_display()
         for i,line in enumerate(lines):
-            self.display.cursor_pos(i,0)
+            self.display.cursor_pos = (i,0)
             self.display.write_word(line)
 
     def goto_next_menu(self):

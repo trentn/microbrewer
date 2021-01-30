@@ -9,15 +9,12 @@ class LCDProxy(object):
         self.chars = chars
         self.rows = rows
         self.lcd = [bytearray(init_char*self.chars,encoding='utf-8') for row in range(self.rows)]
-        self.current_pos = [0,0]
-
-    def cursor_pos(self,row,char):
-        self.current_pos = [row,char]
+        self.cursor_pos = (0,0)
     
     def write(self,char):
         try:
-            self.lcd[self.current_pos[0]][self.current_pos[1]] = ord(char)
-            self.current_pos = [self.current_pos[0],self.current_pos[1]+1]
+            self.lcd[self.cursor_pos[0]][self.cursor_pos[1]] = ord(char)
+            self.cursor_pos = (self.cursor_pos[0],self.cursor_pos[1]+1)
         except IndexError:
             raise InvalidPosition
     
@@ -26,9 +23,8 @@ class LCDProxy(object):
             for char in word:
                 self.write(char)
                 if wrap:
-                    if self.current_pos[1] == self.chars:
-                        self.current_pos[1] = 0
-                        self.current_pos[0] = self.current_pos[0]+1
+                    if self.cursor_pos[1] == self.chars:
+                        self.cursor_pos = (self.cursor_pos[0]+1,0)
         except InvalidPosition:
             raise WillNotFitDisplay
 
