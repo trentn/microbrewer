@@ -27,7 +27,7 @@ class DynamicContent(Content):
     def update_content(self, event_queue):
         raise NotImplementedError
 
-class DisplayFileLine(DynamicContent):
+class DisplayTemp(DynamicContent):
     def __init__(self,content,filename):
         super().__init__(content)
         self.filename = filename
@@ -37,7 +37,9 @@ class DisplayFileLine(DynamicContent):
             line = f.readline()
             if line[-1] == '\n':
                 line = line[:-1]
+            line = line[:2]+'.'+line[2:]
             if line != self.dynamic_content:
                 self.dynamic_content = line
                 self.content = self.init_content + self.dynamic_content
                 event_queue.put({'type':'display_update'})
+

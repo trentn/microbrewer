@@ -1,4 +1,4 @@
-from lcd_ui import Menu, Content, DisplayFileLine
+from lcd_ui import Menu, Content, DisplayTemp
 
 '''
 Menu
@@ -34,7 +34,7 @@ def build_ui():
 
 
     temp_main_entries = [
-        (DisplayFileLine("Current:",'./dummyfile'),None),
+        (DisplayTemp("Current:",'./dummyfile'),None),
         (Content("Target:"),None)
     ]
     temp_main_menu = Menu(temp_main_entries)
