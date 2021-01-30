@@ -39,15 +39,12 @@ class ScrollingContent(DynamicContent):
         self.current_start = 0
 
     def run(self,event_queue,interval=0.25):
-        print("running???")
         self.set_dynamic_content()
         super().run(event_queue,interval=interval)
 
     def update_content(self, event_queue):
         extra_chars = len(self.dynamic_content)-self.avail_chars
         self.content = self.init_content + self.dynamic_content[self.current_start:self.current_start+self.avail_chars]
-        print(len(self.content))
-        print(self.content)
         self.current_start = (self.current_start + 1)%extra_chars
         event_queue.put({'type':'display_update'})
 
