@@ -34,7 +34,7 @@ def build_ui():
 
 
     temp_main_entries = [
-        (DisplayTemp("Current: ",'./dummyfile'),None),
+        (DisplayTemp("Current: ",'/sys/bus/w1/devices/28-012033966b3f/temperature'),None),
         (Content("Target: "),None)
     ]
     temp_main_menu = Menu(temp_main_entries)
