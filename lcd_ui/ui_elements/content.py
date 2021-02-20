@@ -38,7 +38,7 @@ class ScrollingContent(DynamicContent):
         self.avail_chars = line_len-len(self.init_content)-1
         self.current_start = 0
 
-    def run(self,event_queue,interval=1):
+    def run(self,event_queue,interval=.6):
         self.set_dynamic_content()
         super().run(event_queue,interval=interval)
 
