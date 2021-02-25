@@ -1,4 +1,4 @@
-from lcd_ui import Menu, Content, DisplayTemp, DisplayIP, DisplaySSID
+from lcd_ui import *
 
 '''
 Menu
@@ -35,7 +35,7 @@ def build_ui():
 
     temp_main_entries = [
         (DisplayTemp("Current: ",'/sys/bus/w1/devices/28-012033966b3f/temperature'),None),
-        (Content("Target: "),None)
+        (DisplayTemp("Target: ", '/tmp/target_temp'),SelectTemp("Set Target Temp",65))
     ]
     temp_main_menu = Menu(temp_main_entries)
 

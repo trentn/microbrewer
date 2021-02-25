@@ -15,5 +15,13 @@ class UI_Element(object):
     def get_display(self):
         raise NotImplementedError
 
+    def start(self, event_queue):
+        pass
+
+    def stop(self):
+        pass
+
+
 from .menu import *
 from .content import *
+from .input_elements import *
