@@ -112,3 +112,30 @@ class SSIDList(ListInput):
             option.set_parent(self)
             self._options.append((option,ssid)) 
         super().start(event_queue)
+
+class TextInput(UI_Element):
+    def __init__(self,dest):
+        self._dest = dest
+        self._value = ''
+        self._letters = 'ABCD'
+        self._letter_index = 0
+
+    def scroll(self,dir):
+        if dir == 'up':
+            self._letter_index = self._letter_index - 1
+        elif dir == 'down':
+            self._letter_index = self._letter_index + 1
+        else:
+            pass
+
+
+    def cycle(self):
+        pass
+
+    def select(self, event_queue):
+        self._value = self._value + self._letters[self._letter_index]
+        event_queue.put({'type':'display_update'})
+
+    def get_display(self):
+        lines = [self._value, self._letters]
+        return lines
