@@ -6,10 +6,17 @@ import subprocess
 from . import UI_Element, InvalidDirection
 from .content import Content, DynamicContent, ScrollingContent
 
-class DialInput(UI_Element):
-    def __init__(self, label, init_value):
-        self.label = label
+
+class ValueReference(object):
+    def __init__(self, init_value):
         self.value = init_value
+
+
+class DialInput(UI_Element):
+    def __init__(self, label, dest):
+        self.label = label
+        self.value = dest.value
+        self._dest = dest
         self.set = False
 
     def scroll(self,dir):
@@ -25,21 +32,10 @@ class DialInput(UI_Element):
         pass
 
     def select(self):
-        pass
+        self._dest.value = self.value
 
     def get_display(self):
         return [self.label, str(self.value)]
-
-
-class SelectTemp(DialInput):
-    def select(self):
-        with open('/tmp/target_temp','w') as f:
-            str_val = str(self.value)
-            f.write(str_val+'0'*max(0,5-len(str_val)))
-        self.set = True
-
-
-
 
 class ListInput(UI_Element):
     def __init__(self, options, num_lines=2):

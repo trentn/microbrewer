@@ -54,24 +54,32 @@ class ScrollingContent(DynamicContent):
         event_queue.put({'type':'display_update'})
 
     def set_dynamic_content(self):
-        pass
-        
+        pass   
+
 
 class DisplayTemp(DynamicContent):
-    def __init__(self,content,filename):
+    def __init__(self,content,temp_source):
         super().__init__(content)
-        self.filename = filename
+        self._temp_source = temp_source
 
     def update_content(self,event_queue):
-        with open(self.filename, 'r') as f:
-            line = f.readline()
-            if line[-1] == '\n':
-                line = line[:-1]
+        line = ''
+
+        if isinstance(self._temp_source, str):
+            with open(self._temp_source, 'r') as f:
+                line = f.readline()
+                if line[-1] == '\n':
+                    line = line[:-1]
+                line = line[:2]+'.'+line[2:]
+        else:
+            str_val = str(self._temp_source.value)
+            line = str_val+'0'*max(0,5-len(str_val)) 
             line = line[:2]+'.'+line[2:]
-            if line != self.dynamic_content:
-                self.dynamic_content = line
-                self.content = self.init_content + self.dynamic_content
-                event_queue.put({'type':'display_update'})
+            
+        if line != self.dynamic_content:
+            self.dynamic_content = line
+            self.content = self.init_content + self.dynamic_content
+            event_queue.put({'type':'display_update'})
 
 class DisplayIP(ScrollingContent):
     def run(self, event_queue):

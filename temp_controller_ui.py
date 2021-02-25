@@ -1,5 +1,10 @@
 from lcd_ui import *
 
+
+
+target_temp = ValueReference(65)
+
+
 '''
 Menu
     Temperature
@@ -35,7 +40,7 @@ def build_ui():
 
     temp_main_entries = [
         (DisplayTemp("Current: ",'/sys/bus/w1/devices/28-012033966b3f/temperature'),None),
-        (DisplayTemp("Target: ", '/tmp/target_temp'),SelectTemp("Set Target Temp",65))
+        (DisplayTemp("Target: ", target_temp),DialInput("Set Target Temp",target_temp))
     ]
     temp_main_menu = Menu(temp_main_entries)
 
