@@ -16,7 +16,7 @@ from lcd_ui import UI, LCDProxy
 from temp_controller_ui import build_ui
 import time
 
-def input_thread(event_queue):
+def input_thread(event_queue,is_daemon):
     #button setup
     def setup_buttons():
         #setup down
@@ -55,13 +55,18 @@ def input_thread(event_queue):
 
 
     setup_buttons()
-    while True:
-        i = input()
-        event_queue.put({'type':'input','val':i})
+    if is_daemon:
+        while True:
+            pass
+    else:
+        while True:
+            i = input()
+            event_queue.put({'type':'input','val':i})
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--console','-c', action='store_true')
+    parser.add_argument('--daemon', '-d', action='store_true')
 
     args = parser.parse_args()
 
@@ -78,7 +83,7 @@ if __name__ == '__main__':
     ui = UI(temp_controller_ui,display,output_console)
 
     ui_t = threading.Thread(target=ui.run)
-    input_t = threading.Thread(target=input_thread, args=(ui.event_queue,),daemon=True)
+    input_t = threading.Thread(target=input_thread, args=(ui.event_queue,args.daemon),daemon=True)
 
     ui_t.start()
     input_t.start()
