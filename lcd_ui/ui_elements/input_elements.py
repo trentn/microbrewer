@@ -31,8 +31,9 @@ class DialInput(UI_Element):
     def cycle(self):
         pass
 
-    def select(self):
+    def select(self, event_queue):
         self._dest.value = self.value
+        event_queue.put({'type':'input','val':'back'})
 
     def get_display(self):
         return [self.label, str(self.value)]
