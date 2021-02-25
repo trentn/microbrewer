@@ -73,7 +73,7 @@ class ListInput(UI_Element):
     def cycle(self):
         pass
 
-    def select(self):
+    def select(self, event_queue):
         pass
 
     def get_display(self):
@@ -94,14 +94,20 @@ class ListInput(UI_Element):
 
 
 class SSIDList(ListInput):
-    def __init__(self,num_lines=2):
+    def __init__(self,ssid_ref,num_lines=2):
         super().__init__(None,num_lines)
+        self._ssid_ref = ssid_ref
+    
+    def select(self, event_queue):
+       self._ssid_ref.value = self._options[self._display_start+self._select_line][1]
+       event_queue.put({'type':'input','val':'back'})
 
     def start(self,event_queue):
         self._options = []
         result = subprocess.check_output('iwlist wlan0 scan | grep ESSID', shell=True, text=True)
         for r in result.strip().split('\n'):
-            option = ScrollingContent('', dynamic_content=r.split('"')[1])
+            ssid = r.split('"')[1]
+            option = ScrollingContent('', dynamic_content=ssid)
             option.set_parent(self)
-            self._options.append((option,None)) 
+            self._options.append((option,ssid)) 
         super().start(event_queue)

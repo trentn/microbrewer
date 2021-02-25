@@ -44,7 +44,7 @@ class UI(object):
             if isinstance(self.current_elem,Menu):
                 self.goto_next_menu()
             else:
-                self.current_elem.select()
+                self.current_elem.select(self.event_queue)
 
         elif input == 'cycle':
             self.current_elem.cycle()

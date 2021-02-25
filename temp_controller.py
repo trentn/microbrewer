@@ -1,9 +1,14 @@
 from lcd_ui import *
 
 
+class WifiConfig(object):
+    def __init__(self):
+        self.ssid = ValueReference('')
+        self.passwd = ValueReference('')
+
 
 target_temp = ValueReference(65)
-
+wifi_config = WifiConfig()
 
 '''
 Menu
@@ -25,8 +30,8 @@ def build_ui():
     wifi_display_menu = Menu(wifi_display_entries)
 
     wifi_config_entries = [
-        (Content("Set SSID"),SSIDList()),
-        (Content("Set Pwd"),None)
+        (ScrollingContent("Set SSID: ", wifi_config.ssid),SSIDList(wifi_config.ssid)),
+        (Content("Set Pwd: "),None)
     ]
     wifi_config_menu = Menu(wifi_config_entries)
     

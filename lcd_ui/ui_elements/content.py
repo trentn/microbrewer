@@ -34,13 +34,19 @@ class DynamicContent(Content):
         raise NotImplementedError
 
 class ScrollingContent(DynamicContent):
-    def __init__(self, content, dynamic_content='', line_len=16):
+    def __init__(self, content, dynamic_content=None, line_len=16):
         super().__init__(content)
         self.avail_chars = line_len-len(self.init_content)-1
-        if self.avail_chars >= len(dynamic_content):
-            self.init_content = self.init_content + dynamic_content
-        else:
-            self.dynamic_content=dynamic_content
+        
+        if dynamic_content:
+            if isinstance(dynamic_content,str):
+                if self.avail_chars >= len(dynamic_content):
+                    self.init_content = self.init_content + dynamic_content
+                else:
+                    self.dynamic_content=dynamic_content
+            else:
+                self.dynamic_content=dynamic_content
+
         self.current_start = 0
 
     def run(self,event_queue,interval=.6):
@@ -48,9 +54,16 @@ class ScrollingContent(DynamicContent):
         super().run(event_queue,interval=interval)
 
     def update_content(self, event_queue):
-        extra_chars = len(self.dynamic_content)-self.avail_chars
-        self.content = self.init_content + self.dynamic_content[self.current_start:self.current_start+self.avail_chars]
+        if isinstance(self.dynamic_content,str):
+            dynamic_content = self.dynamic_content
+        else:
+            dynamic_content = self.dynamic_content.value
+
+
+        extra_chars = len(dynamic_content)-self.avail_chars
+        self.content = self.init_content + dynamic_content[self.current_start:self.current_start+self.avail_chars]
         self.current_start = (self.current_start + 1)%(extra_chars+1)
+        
         event_queue.put({'type':'display_update'})
 
     def set_dynamic_content(self):
