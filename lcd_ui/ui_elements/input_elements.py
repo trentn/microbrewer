@@ -1,9 +1,10 @@
 import time
 import random
 import threading
+import subprocess
 
 from . import UI_Element, InvalidDirection
-from .content import Content, DynamicContent
+from .content import Content, DynamicContent, ScrollingContent
 
 class DialInput(UI_Element):
     def __init__(self, label, init_value):
@@ -95,3 +96,16 @@ class ListInput(UI_Element):
     def stop(self):
         self.is_displayed = False
 
+
+class SSIDList(ListInput):
+    def __init__(self,num_lines=2):
+        super().__init__(None,num_lines)
+
+    def start(self,event_queue):
+        self._options = []
+        result = subprocess.check_output('iwlist wlan0 scan | grep ESSID', shell=True, text=True)
+        for r in result.strip().split('\n'):
+            option = ScrollingContent('', dynamic_content=r.split('"')[1])
+            option.set_parent(self)
+            self._options.append((option,None)) 
+        super().start(event_queue)

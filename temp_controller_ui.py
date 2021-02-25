@@ -20,7 +20,7 @@ def build_ui():
     wifi_display_menu = Menu(wifi_display_entries)
 
     wifi_config_entries = [
-        (Content("Set SSID"),None),
+        (Content("Set SSID"),SSIDList()),
         (Content("Set Pwd"),None)
     ]
     wifi_config_menu = Menu(wifi_config_entries)

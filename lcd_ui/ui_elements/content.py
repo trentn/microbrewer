@@ -10,10 +10,10 @@ except ImportError:
 class Content(object):
     def __init__(self, content):
         self.content = content
-        self.menu = None
+        self._parent = None
 
-    def set_parent(self,parent_menu):
-        self.menu = parent_menu
+    def set_parent(self,parent):
+        self._parent = parent
 
     def __str__(self):
         return self.content
@@ -25,7 +25,7 @@ class DynamicContent(Content):
         self.dynamic_content = ""
 
     def run(self,event_queue,interval=1):
-        while self.menu.is_displayed:
+        while self._parent.is_displayed:
             self.update_content(event_queue)
             time.sleep(interval)
 
@@ -34,8 +34,9 @@ class DynamicContent(Content):
         raise NotImplementedError
 
 class ScrollingContent(DynamicContent):
-    def __init__(self, content, line_len=16):
+    def __init__(self, content, dynamic_content='', line_len=16):
         super().__init__(content)
+        self.dynamic_content=dynamic_content
         self.avail_chars = line_len-len(self.init_content)-1
         self.current_start = 0
 
@@ -50,7 +51,7 @@ class ScrollingContent(DynamicContent):
         event_queue.put({'type':'display_update'})
 
     def set_dynamic_content(self):
-        self.dynamic_content = "SOMETHING RATHER LONG"
+        pass
         
 
 class DisplayTemp(DynamicContent):
