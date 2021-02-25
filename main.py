@@ -13,7 +13,7 @@ except ImportError:
 import argparse
 import threading
 from lcd_ui import UI, LCDProxy
-from temp_controller_ui import build_ui
+from temp_controller import build_ui
 import time
 
 def input_thread(event_queue,is_daemon):
