@@ -36,8 +36,11 @@ class DynamicContent(Content):
 class ScrollingContent(DynamicContent):
     def __init__(self, content, dynamic_content='', line_len=16):
         super().__init__(content)
-        self.dynamic_content=dynamic_content
         self.avail_chars = line_len-len(self.init_content)-1
+        if self.avail_chars >= len(dynamic_content):
+            self.init_content = self.init_content + dynamic_content
+        else:
+            self.dynamic_content=dynamic_content
         self.current_start = 0
 
     def run(self,event_queue,interval=.6):
