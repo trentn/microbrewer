@@ -1,5 +1,6 @@
 from abc import abstractmethod
 import time
+import subprocess
 
 try:
     import netifaces
@@ -78,3 +79,12 @@ class DisplayIP(ScrollingContent):
             self.dynamic_content = netifaces.ifaddresses(iface)[netifaces.AF_INET][0]['addr']
         except NameError:
             self.dynamic_content = '000.000.000.000' 
+
+class DisplaySSID(ScrollingContent):
+    def run(self, event_queue):
+        super().run(event_queue)
+
+    def set_dynamic_content(self):
+        output = subprocess.check_output(['iwgetid'])
+        self.dynamic_content = output.split(b'"')[1].decode('utf-8')
+
