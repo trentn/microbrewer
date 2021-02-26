@@ -44,7 +44,6 @@ class ListInput(UI_Element):
         self._num_lines = num_lines
         self._select_line = 0
         self._display_start = 0
-        self._display_threads = []
         self.is_displayed = False
 
     def scroll_display(self,dir):
@@ -88,7 +87,6 @@ class ListInput(UI_Element):
             if isinstance(entry[0],DynamicContent):
                 t = threading.Thread(target=entry[0].run,args=(event_queue,),daemon=True)
                 t.start()
-                self._display_threads.append(t)
     
     def stop(self):
         self.is_displayed = False
@@ -118,13 +116,14 @@ class TextInput(UI_Element):
         self._dest = dest
         self._value = ''
         self._letters = 'ABCD'
+        self._display_letters = bytearray(self._letters, encoding='utf-8')
         self._letter_index = 0
 
     def scroll(self,dir):
         if dir == 'up':
-            self._letter_index = self._letter_index - 1
+            self._letter_index = max(self._letter_index - 1, 0)
         elif dir == 'down':
-            self._letter_index = self._letter_index + 1
+            self._letter_index = min(self._letter_index + 1, len(self._letters)-1)
         else:
             pass
 
@@ -137,5 +136,28 @@ class TextInput(UI_Element):
         event_queue.put({'type':'display_update'})
 
     def get_display(self):
-        lines = [self._value, self._letters]
+        lines = [self._value, self._display_letters.decode('utf-8')]
         return lines
+
+    def start(self,event_queue):
+        self.is_displayed = True
+        def blink(self):
+            while self.is_displayed:
+                index = self._letter_index
+                
+                self._display_letters[index] = ord(' ')
+                event_queue.put({'type':'display_update'})
+                time.sleep(0.3)
+
+                self._display_letters[index] = ord(self._letters[index])
+                event_queue.put({'type':'display_update'})
+                time.sleep(0.3)
+
+        t = threading.Thread(target=blink, args=(self,),daemon=True)
+        t.start()
+    
+    def stop(self):
+        self.is_displayed = False
+
+
+
