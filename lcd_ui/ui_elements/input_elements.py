@@ -128,7 +128,7 @@ class SSIDList(ListInput, ScrollingLabel):
         self.dynamic_content = self._ssid_ref
     
     def select(self, event_queue):
-       self._ssid_ref.value = self._options[self._display_start+self._select_line][1]
+       self._ssid_ref.value = str(self._options[self._display_start+self._select_line])
        event_queue.put({'type':'input','val':'back'})
 
     def start(self,event_queue):
@@ -139,7 +139,7 @@ class SSIDList(ListInput, ScrollingLabel):
                 ssid = r.split('"')[1]
                 option = ScrollingContent('', ssid)
                 option.set_parent(self)
-                self._options.append((option,ssid))
+                self._options.append(option)
         except:
             option = ScrollingContent('', 'Unable to find nearby SSIDs')
             option.set_parent(self)
