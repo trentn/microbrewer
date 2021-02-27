@@ -55,10 +55,7 @@ def input_thread(event_queue,is_daemon):
 
 
     setup_buttons()
-    if is_daemon:
-        while True:
-            pass
-    else:
+    if not is_daemon:
         while True:
             i = input()
             event_queue.put({'type':'input','val':i})
