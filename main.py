@@ -20,17 +20,17 @@ def input_thread(event_queue,is_daemon):
     #button setup
     def setup_buttons():
         #setup down
-        GPIO.setup(20, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        GPIO.add_event_detect(20, GPIO.RISING, callback=down_button_callback)
+        GPIO.setup(27, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.add_event_detect(27, GPIO.RISING, callback=down_button_callback)
         
-        GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        GPIO.add_event_detect(21, GPIO.RISING, callback=up_button_callback)
+        GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.add_event_detect(17, GPIO.RISING, callback=up_button_callback)
 
-        GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        GPIO.add_event_detect(18, GPIO.RISING, callback=back_button_callback)
+        GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.add_event_detect(4, GPIO.RISING, callback=back_button_callback)
 
-        GPIO.setup(23,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        GPIO.add_event_detect(23, GPIO.RISING, callback=select_button_callback)
+        GPIO.setup(22,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.add_event_detect(22, GPIO.RISING, callback=select_button_callback)
     
     #input handler callbacks
     def down_button_callback(channel):
@@ -71,7 +71,7 @@ if __name__ == '__main__':
         lcd = None
         output_console = True
     else:
-        lcd = CharLCD(numbering_mode=GPIO.BCM,cols=16,rows=2,pin_rs=26,pin_e=19,pins_data=[13,6,5,12])
+        lcd = CharLCD(numbering_mode=GPIO.BCM,cols=16,rows=2,pin_rs=18,pin_e=23,pins_data=[24,25,12,16])
         output_console = False
         
     display = LCDProxy(lcd=lcd)
