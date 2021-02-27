@@ -4,7 +4,8 @@ import threading
 import subprocess
 
 from . import UI_Element, InvalidDirection
-from .content import Content, DynamicContent, ScrollingContent
+from .label_mixins import *
+from .content_elements import ScrollingContent
 
 
 class ValueReference(object):
@@ -12,11 +13,16 @@ class ValueReference(object):
         self.value = init_value
 
 
-class DialInput(UI_Element):
+class DialInput(UI_Element, DynamicLabel):
     def __init__(self, label, dest):
-        self.label = label
+        super().__init__(None,label)
+        self.label = 'Set ' + label
         self.value = dest.value
         self._dest = dest
+        
+        self.init_content = label
+        self.dynamic_content = ""
+
         self.set = False
 
     def scroll(self,dir):
@@ -38,9 +44,21 @@ class DialInput(UI_Element):
     def get_display(self):
         return [self.label, str(self.value)]
 
+    def update_content(self, event_queue):
+        line = ''
+        str_val = str(self._dest.value)
+        line = str_val+'0'*max(0,5-len(str_val)) 
+        line = line[:2]+'.'+line[2:]
+            
+        if line != self.dynamic_content:
+            self.dynamic_content = line
+            self.content = self.init_content + self.dynamic_content
+            event_queue.put({'type':'display_update'})
+
 class ListInput(UI_Element):
-    def __init__(self, options, num_lines=2):
-        self._options = options
+    def __init__(self, options,label,num_lines=2):
+        super().__init__(options,label)
+        self._options = self._children
         self._num_lines = num_lines
         self._select_line = 0
         self._display_start = 0
@@ -78,24 +96,36 @@ class ListInput(UI_Element):
 
     def get_display(self):
         lines = self._options[self._display_start:self._display_start+self._num_lines]
-        lines = [">" + str(line[0]) if i==self._select_line else " " + str(line[0]) for i,line in enumerate(lines)]
+        lines = [">" + str(line) if i==self._select_line else " " + str(line) for i,line in enumerate(lines)]
         return lines
 
     def start(self,event_queue):
         self.is_displayed = True
         for entry in self._options:
-            if isinstance(entry[0],DynamicContent):
-                t = threading.Thread(target=entry[0].run,args=(event_queue,),daemon=True)
+            if isinstance(entry,DynamicLabel):
+                t = threading.Thread(target=entry.run,args=(event_queue,),daemon=True)
                 t.start()
     
     def stop(self):
         self.is_displayed = False
 
+class Menu(ListInput):
+    def __init__(self,options,label):
+        super().__init__(options,label)
 
-class SSIDList(ListInput):
+    def select(self, event_queue):
+        option = self._options[self._display_start+self._select_line]
+        if isinstance(option, (ListInput,DialInput,TextInput)):
+            return option
+        else:
+            return None
+
+class SSIDList(ListInput, ScrollingLabel):
     def __init__(self,ssid_ref,num_lines=2):
-        super().__init__(None,num_lines)
+        super().__init__(None,'',num_lines)
         self._ssid_ref = ssid_ref
+        self.init_content = 'Set SSID: '
+        self.dynamic_content = self._ssid_ref
     
     def select(self, event_queue):
        self._ssid_ref.value = self._options[self._display_start+self._select_line][1]
@@ -103,21 +133,31 @@ class SSIDList(ListInput):
 
     def start(self,event_queue):
         self._options = []
-        result = subprocess.check_output('iwlist wlan0 scan | grep ESSID', shell=True, text=True)
-        for r in result.strip().split('\n'):
-            ssid = r.split('"')[1]
-            option = ScrollingContent('', dynamic_content=ssid)
+        try:
+            result = subprocess.check_output('iwlist wlan0 scan | grep ESSID', shell=True, text=True)
+            for r in result.strip().split('\n'):
+                ssid = r.split('"')[1]
+                option = ScrollingContent('', ssid)
+                option.set_parent(self)
+                self._options.append((option,ssid))
+        except:
+            option = ScrollingContent('', 'Unable to find nearby SSIDs')
             option.set_parent(self)
-            self._options.append((option,ssid)) 
+            self._options.append(option)
+
         super().start(event_queue)
 
-class TextInput(UI_Element):
-    def __init__(self,dest):
+
+class TextInput(UI_Element,ScrollingLabel):
+    def __init__(self,dest,label):
+        super().__init__(None,'')
         self._dest = dest
         self._value = ''
         self._letters = 'ABCD'
         self._display_letters = bytearray(self._letters, encoding='utf-8')
         self._letter_index = 0
+        self.dynamic_content = self._dest
+        self.init_content = label
 
     def scroll(self,dir):
         if dir == 'up':
@@ -127,9 +167,9 @@ class TextInput(UI_Element):
         else:
             pass
 
-
-    def cycle(self):
-        pass
+    def back(self):
+        self._dest.value = self._value
+        return self._parent
 
     def select(self, event_queue):
         self._value = self._value + self._letters[self._letter_index]

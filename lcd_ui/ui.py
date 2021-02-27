@@ -12,11 +12,12 @@ class UI(object):
         self.output_console = output_console
 
     def run(self):
-        def print_display():
-            print() 
-            print(self.display)
+        self.current_elem.start(self.event_queue)
 
         if(self.output_console):
+            def print_display():
+                print() 
+                print(self.display)
             print_display()
         
         i = None
@@ -41,16 +42,21 @@ class UI(object):
             self.current_elem.scroll('down')
         
         elif input == 'select':
-            if isinstance(self.current_elem,Menu):
-                self.goto_next_menu()
-            else:
-                self.current_elem.select(self.event_queue)
+            select = self.current_elem.select(self.event_queue)
+            if select:
+                self.current_elem.stop()
+                self.current_elem = select
+                self.current_elem.start(self.event_queue)
 
         elif input == 'cycle':
             self.current_elem.cycle()
         
         elif input == 'back':
-            self.go_back_menu()
+            back = self.current_elem.back()
+            if back:
+                self.current_elem.stop()
+                self.current_elem = back
+                self.current_elem.start(self.event_queue)
 
     def update_display(self):
         self.display.clear()
@@ -59,15 +65,3 @@ class UI(object):
             self.display.cursor_pos = (i,0)
             self.display.write_string(line)
         self.display.update()
-
-    def goto_next_menu(self):
-        next_menu = self.current_elem.select()
-        if next_menu:
-            self.prev_menus.append(self.current_elem)
-            self.current_elem = next_menu
-            self.current_elem.start(self.event_queue)
-
-    def go_back_menu(self):
-        if self.prev_menus:
-                self.current_elem.stop()
-                self.current_elem = self.prev_menus.pop()

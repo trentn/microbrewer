@@ -22,37 +22,39 @@ Menu
             Enter Password
 '''
 
-def build_ui():  
+def build_ui():    
     wifi_display_entries = [
-        (DisplaySSID("SSID: "),None),
-        (DisplayIP("IP: "),None)
+        DisplaySSID(),
+        DisplayIP()
     ]
-    wifi_display_menu = Menu(wifi_display_entries)
+    
+    wifi_display_menu = Menu(wifi_display_entries,'Display')
+
 
     wifi_config_entries = [
-        (ScrollingContent("Set SSID: ", wifi_config.ssid),SSIDList(wifi_config.ssid)),
-        (Content("Set Pwd: "),None)
+        SSIDList(wifi_config.ssid),
+        TextInput(wifi_config.passwd,'Set Pwd: ')
     ]
-    wifi_config_menu = Menu(wifi_config_entries)
+    
+    wifi_config_menu = Menu(wifi_config_entries,'Configure')
     
 
     wifi_main_entries = [
-        (Content("Display"),wifi_display_menu),
-        (Content("Configure"),wifi_config_menu)
+        wifi_display_menu,
+        wifi_config_menu
     ]
-    wifi_main_menu = Menu(wifi_main_entries)
+    wifi_main_menu = Menu(wifi_main_entries,'Wifi Settings')
 
 
     temp_main_entries = [
-        (DisplayTemp("Current: ",'/sys/bus/w1/devices/28-012033966b3f/temperature'),None),
-        (DisplayTemp("Target: ", target_temp),DialInput("Set Target Temp",target_temp))
+        DisplayTemp("Current: ",'/sys/bus/w1/devices/28-012033966b3f/temperature'),
+        DialInput("Target: ", target_temp)
     ]
-    temp_main_menu = Menu(temp_main_entries)
+    temp_main_menu = Menu(temp_main_entries,'Temperature')
 
 
     main_menu_entries = [
-        (Content("Temperature"),temp_main_menu),
-        (Content("Wifi Settings"),wifi_main_menu),
-        (Content("Poweroff"),None)
+        temp_main_menu,
+        wifi_main_menu
     ]
-    return Menu(main_menu_entries)
+    return Menu(main_menu_entries, None)

@@ -53,8 +53,8 @@ def input_thread(event_queue,is_daemon):
         if GPIO.input(channel):
             event_queue.put({'type':'input','val':'select'})
 
-
-    setup_buttons()
+    if on_rpi:
+        setup_buttons()
     if not is_daemon:
         while True:
             i = input()
@@ -86,4 +86,5 @@ if __name__ == '__main__':
     input_t.start()
 
     ui_t.join()
-    GPIO.cleanup()
+    if on_rpi:
+        GPIO.cleanup()
