@@ -22,6 +22,14 @@ Menu
             Enter Password
 '''
 
+def get_temp_probe():
+    with open('/sys/bus/w1/devices/w1_bus_master1/w1_master_slaves', 'r') as w1_slave_f:
+        probe_id = ''
+        while not probe_id.startswith('28-'):
+            probe_id = w1_slave_f.readline().strip()
+    
+    return '/sys/bus/w1/devices/%s/temperature' % probe_id
+
 def build_ui():    
     wifi_display_entries = [
         DisplaySSID(),
@@ -47,7 +55,7 @@ def build_ui():
 
 
     temp_main_entries = [
-        DisplayTemp("Current: ",'/sys/bus/w1/devices/28-012033966b3f/temperature'),
+        DisplayTemp("Current: ",get_temp_probe()),
         DialInput("Target: ", target_temp)
     ]
     temp_main_menu = Menu(temp_main_entries,'Temperature')
