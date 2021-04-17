@@ -81,7 +81,7 @@ class ListInput(UI_Element):
             else:
                 self.scroll_display('up')
         elif dir == 'down':
-            if self._select_line < self._num_lines-1:
+            if self._select_line < self._num_lines-1 and self._select_line < len(self._options)-1:
                 self._select_line = (self._select_line + 1)
             else:
                 self.scroll_display('down')
