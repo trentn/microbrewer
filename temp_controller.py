@@ -71,9 +71,10 @@ class Burner(ListInput):
                 if temp < self.target_temp.value and not self.burner_on:
                     self.turn_on()
 
-        #logf_writer.writerow([time.time(),temp,system.burner_on])
-        time.sleep(0.25)
+            #logf_writer.writerow([time.time(),temp,system.burner_on])
+            time.sleep(0.25)
 
+        self.turn_off()
         #logf.close()
 
     def select(self, event_queue):
