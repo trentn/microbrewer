@@ -1,6 +1,7 @@
 from lcd_ui import *
 
 import RPi.GPIO as GPIO
+import threading
 
 def get_temp_probe():
     with open('/sys/bus/w1/devices/w1_bus_master1/w1_master_slaves', 'r') as w1_slave_f:
@@ -24,14 +25,19 @@ class Burner(ListInput):
         self.burner_on = False
         self.burner_pin = 21
         self.target_temp = target_temp
-        self.tempurature_filename = temperature_filename
+        self.temperature_filename = temperature_filename
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.burner_pin,GPIO.OUT)
         GPIO.output(self.burner_pin,GPIO.LOW)
-        self.running = True
 
-        self._options = ['On']
+        self.enable_line = ScrollingContent('','Enable Temperature Control')
+        self.enable_line.set_parent(self)
+        self.disable_line = ScrollingContent('','Disable Temperature Control')
+        self.disable_line.set_parent(self)
+        
+        self._options = ['On',self.enable_line]
+        
 
     def turn_on(self):
         #print('turning on the burner')
@@ -45,30 +51,30 @@ class Burner(ListInput):
 
     def control_temperature(self):
 
-        logf_name = 'temp_log_%s.csv' % str(datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
-        logf = open(logf_name, 'w')
-        logf_writer = csv.writer(logf, delimiter=',')
+        #logf_name = 'temp_log_%s.csv' % str(datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
+        #logf = open(logf_name, 'w')
+        #logf_writer = csv.writer(logf, delimiter=',')
     
-        print('logging temp to %s' % logf_name)
+        #print('logging temp to %s' % logf_name)
    
-        system.logging = True
-        while system.running:
+        #system.logging = True
+        while self.running:
             with open(self.temperature_filename, 'r') as tempf:
                 temp = tempf.readline()
                 temp = temp.strip()
                 temp = float(temp)/1000
         
-            if system.target_temp:
-                if temp >= system.target_temp and system.burner_on:
-                    self.turn_off_burner(system)
+            if self.target_temp:
+                if temp >= self.target_temp.value and self.burner_on:
+                    self.turn_off()
 
-                if temp < system.target_temp and not system.burner_on:
-                    self.turn_on_burner(system)
+                if temp < self.target_temp.value and not self.burner_on:
+                    self.turn_on()
 
-        logf_writer.writerow([time.time(),temp,system.burner_on])
+        #logf_writer.writerow([time.time(),temp,system.burner_on])
         time.sleep(0.25)
 
-        logf.close()
+        #logf.close()
 
     def select(self, event_queue):
         selected = self._options[self._select_line]
@@ -78,6 +84,23 @@ class Burner(ListInput):
         elif selected == 'Off':
             self.turn_off()
             self._options[self._select_line] = 'On'
+        elif type(selected) == ScrollingContent:
+            content = selected.init_content + selected.dynamic_content 
+            if content == 'Enable Temperature Control':
+                self.running = True
+                self.control_t = threading.Thread(target=self.control_temperature)
+                self.control_t.start()
+                self._options = [self.disable_line]
+                self._select_line = 0
+                self.stop()
+                self.start(event_queue)
+            elif content == 'Disable Temperature Control':
+                self.running = False
+                self.control_t.join()
+                self._options = ['On',self.enable_line]
+                self._select_line = 1
+                self.stop()
+                self.start(event_queue)
 
 temperature_filename = get_temp_probe()
 target_temp = ValueReference(65)
