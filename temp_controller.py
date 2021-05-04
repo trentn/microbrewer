@@ -2,6 +2,9 @@ from lcd_ui import *
 
 import RPi.GPIO as GPIO
 import threading
+import datetime
+import csv
+import time
 
 def get_temp_probe():
     with open('/sys/bus/w1/devices/w1_bus_master1/w1_master_slaves', 'r') as w1_slave_f:
@@ -51,13 +54,13 @@ class Burner(ListInput):
 
     def control_temperature(self):
 
-        #logf_name = 'temp_log_%s.csv' % str(datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
-        #logf = open(logf_name, 'w')
-        #logf_writer = csv.writer(logf, delimiter=',')
+        logf_name = '/var/log/temp_log_%s.csv' % str(datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S'))
+        logf = open(logf_name, 'w')
+        logf_writer = csv.writer(logf, delimiter=',')
     
         #print('logging temp to %s' % logf_name)
    
-        #system.logging = True
+        self.logging = True
         while self.running:
             with open(self.temperature_filename, 'r') as tempf:
                 temp = tempf.readline()
@@ -71,11 +74,11 @@ class Burner(ListInput):
                 if temp < self.target_temp.value and not self.burner_on:
                     self.turn_on()
 
-            #logf_writer.writerow([time.time(),temp,system.burner_on])
+            logf_writer.writerow([time.time(),temp,self.burner_on])
             time.sleep(0.25)
 
         self.turn_off()
-        #logf.close()
+        logf.close()
 
     def select(self, event_queue):
         selected = self._options[self._select_line]
