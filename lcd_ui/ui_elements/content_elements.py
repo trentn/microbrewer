@@ -47,7 +47,7 @@ class DisplayIP(ScrollingContent):
         try:
             iface = netifaces.gateways()['default'][netifaces.AF_INET][1]
             self.dynamic_content = netifaces.ifaddresses(iface)[netifaces.AF_INET][0]['addr']
-        except NameError:
+        except:
             self.dynamic_content = '000.000.000.000' 
 
 class DisplaySSID(ScrollingContent):
