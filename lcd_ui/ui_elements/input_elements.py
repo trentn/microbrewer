@@ -25,7 +25,8 @@ class DialInput(UI_Element, DynamicLabel):
 
         self.set = False
 
-    def scroll(self,dir):
+    def scroll(self,**kwargs):
+        dir = kwargs['dir']
         self.set = False
         if dir == 'up':
             self.value = self.value + 1
@@ -74,7 +75,8 @@ class ListInput(UI_Element):
         else:
             raise InvalidDirection
 
-    def scroll(self,dir):
+    def scroll(self,**kwargs):
+        dir = kwargs['dir']
         if dir == 'up':
             if self._select_line > 0:
                 self._select_line = (self._select_line - 1)
@@ -153,17 +155,37 @@ class TextInput(UI_Element,ScrollingLabel):
         super().__init__(None,'')
         self._dest = dest
         self._value = ''
-        self._letters = 'ABCD'
-        self._display_letters = bytearray(self._letters, encoding='utf-8')
+        self._letters = list('ABCDEFGHJIKLMNOPQRSTUVWXYZ 1234567890_!?@#$%^&*"\';:,.=+-()<>[]{}\\/|`~')
+        #self._letters = list('ABCDEFGHJIKLMNOPQRSTUVWXYZ')
+        self._start = 0
+        self._end = 16 
+        self._display_letters = bytearray(''.join(self._letters), encoding='utf-8')
         self._letter_index = 0
         self.dynamic_content = self._dest
         self.init_content = label
 
-    def scroll(self,dir):
+    def scroll(self,**kwargs):
+        dir = kwargs['dir']
+        length = kwargs['length']
         if dir == 'up':
-            self._letter_index = max(self._letter_index - 1, 0)
+            if length == 'short':
+                self._letters[self._letter_index] = self._letters[self._letter_index].upper()
+                self._letter_index = max(self._letter_index - 1, 0)
+                if self._letter_index < self._start:
+                    self._start -= 1
+                    self._end -= 1
+            elif length == 'long':
+                self._letters[self._letter_index] = self._letters[self._letter_index].upper()
         elif dir == 'down':
-            self._letter_index = min(self._letter_index + 1, len(self._letters)-1)
+            if length == 'short':
+                self._letters[self._letter_index] = self._letters[self._letter_index].upper()
+                self._letter_index = min(self._letter_index + 1, len(self._letters)-1)
+                if self._letter_index >= self._end:
+                    self._start += 1
+                    self._end += 1
+            elif length == 'long':
+                if self._letters[self._letter_index].isalpha():
+                    self._letters[self._letter_index] = self._letters[self._letter_index].lower() 
         else:
             pass
 
@@ -176,7 +198,7 @@ class TextInput(UI_Element,ScrollingLabel):
         event_queue.put({'type':'display_update'})
 
     def get_display(self):
-        lines = [self._value, self._display_letters.decode('utf-8')]
+        lines = [self._value, self._display_letters.decode('utf-8')[self._start:self._end]]
         return lines
 
     def start(self,event_queue):

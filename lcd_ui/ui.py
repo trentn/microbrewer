@@ -24,34 +24,33 @@ class UI(object):
         while i != 'quit':
             e = self.event_queue.get()
             if e['type'] == 'input':
-                i = e['val']
                 if e['val'] == 'quit':
                     continue
-                self.handle_input(i)
+                self.handle_input(e)
                 self.update_display()
             if e['type'] == 'display_update':
                 self.update_display()
             if(self.output_console):
                 print_display()
     
-    def handle_input(self,input):
-        if input == 'up':
-            self.current_elem.scroll('up')
+    def handle_input(self,event):
+        if event['val'] == 'up':
+            self.current_elem.scroll(dir='up',length=event['length'])
         
-        elif input == 'down':
-            self.current_elem.scroll('down')
+        elif event['val'] == 'down':
+            self.current_elem.scroll(dir='down',length=event['length'])
         
-        elif input == 'select':
+        elif event['val'] == 'select':
             select = self.current_elem.select(self.event_queue)
             if select:
                 self.current_elem.stop()
                 self.current_elem = select
                 self.current_elem.start(self.event_queue)
 
-        elif input == 'cycle':
+        elif event['val'] == 'cycle':
             self.current_elem.cycle()
         
-        elif input == 'back':
+        elif event['val'] == 'back':
             back = self.current_elem.back()
             if back:
                 self.current_elem.stop()

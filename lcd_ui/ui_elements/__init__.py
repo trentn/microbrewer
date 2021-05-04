@@ -24,7 +24,7 @@ class UI_Element(object):
     def set_parent(self, parent):
         self._parent = parent
 
-    def scroll(self,dir):
+    def scroll(self,**kwargs):
         pass
 
     def cycle(self):

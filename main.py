@@ -36,13 +36,37 @@ def input_thread(event_queue,is_daemon):
     def down_button_callback(channel):
         time.sleep(0.04)
         if GPIO.input(channel):
-            event_queue.put({'type':'input','val':'down'}) 
+            t0 = time.perf_counter()
+            while GPIO.input(channel):
+                t1 =time.perf_counter()
+                if t1-t0 > 0.5:
+                    event_queue.put({'type':'input','val':'down','length':'short'}) 
+                    time.sleep(0.1)
+                       
+            t = t1-t0
+            if t < 0.5:
+                if t > 0.25:
+                    event_queue.put({'type':'input','val':'down','length':'long'})
+                else:
+                    event_queue.put({'type':'input','val':'down','length':'short'}) 
     
     def up_button_callback(channel):
         time.sleep(0.04)
         if GPIO.input(channel):
-            event_queue.put({'type':'input','val':'up'})
-
+            t0 = time.perf_counter()
+            while GPIO.input(channel):
+                t1 =time.perf_counter()
+                if t1-t0 > 0.5:
+                    event_queue.put({'type':'input','val':'up','length':'short'}) 
+                    time.sleep(0.1)
+                       
+            t = t1-t0
+            if t < 0.5:
+                if t > 0.25:
+                    event_queue.put({'type':'input','val':'up','length':'long'})
+                else:
+                    event_queue.put({'type':'input','val':'up','length':'short'}) 
+    
     def back_button_callback(channel):
         time.sleep(0.04)
         if GPIO.input(channel):
