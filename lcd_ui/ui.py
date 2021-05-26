@@ -20,12 +20,11 @@ class UI(object):
                 print(self.display)
             print_display()
         
-        i = None
-        while i != 'quit':
+        while True:
             e = self.event_queue.get()
             if e['type'] == 'input':
                 if e['val'] == 'quit':
-                    continue
+                    break
                 self.handle_input(e)
                 self.update_display()
             if e['type'] == 'display_update':
