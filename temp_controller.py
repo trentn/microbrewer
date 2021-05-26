@@ -1,12 +1,25 @@
+on_rpi = True
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    print("Unable to import RPi.GPIO")
+    on_rpi = False
+try:
+    from RPLCD import CharLCD
+except ImportError:
+    print("Importing RPLCD failed")
+    on_rpi = False
+
 from lcd_ui import *
 
-import RPi.GPIO as GPIO
 import threading
 import datetime
 import csv
 import time
 
 def get_temp_probe():
+    if not on_rpi:
+        return "temp_placeholder"
     with open('/sys/bus/w1/devices/w1_bus_master1/w1_master_slaves', 'r') as w1_slave_f:
         probe_id = ''
         while not probe_id.startswith('28-'):
@@ -30,9 +43,10 @@ class Burner(ListInput):
         self.target_temp = target_temp
         self.temperature_filename = temperature_filename
 
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.burner_pin,GPIO.OUT)
-        GPIO.output(self.burner_pin,GPIO.LOW)
+        if on_rpi:
+            GPIO.setmode(GPIO.BCM)
+            GPIO.setup(self.burner_pin,GPIO.OUT)
+            GPIO.output(self.burner_pin,GPIO.LOW)
 
         self.enable_line = ScrollingContent('','Enable Temperature Control')
         self.enable_line.set_parent(self)
@@ -44,12 +58,14 @@ class Burner(ListInput):
 
     def turn_on(self):
         #print('turning on the burner')
-        GPIO.output(self.burner_pin,GPIO.HIGH)
+        if on_rpi:
+            GPIO.output(self.burner_pin,GPIO.HIGH)
         self.burner_on = True
 
     def turn_off(self):
         #print('turning off the burner')
-        GPIO.output(self.burner_pin,GPIO.LOW)
+        if on_rpi:
+            GPIO.output(self.burner_pin,GPIO.LOW)
         self.burner_on = False
 
     def control_temperature(self):
