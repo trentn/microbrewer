@@ -9,6 +9,7 @@ import argparse
 import threading
 
 from lcd import LCD
+from web import WebServer
 from properties import SystemProperties
 
 
@@ -25,6 +26,13 @@ if __name__ == '__main__':
     ui_t = threading.Thread(target=lcd_ui.run)
     ui_t.start()
 
+    web = WebServer(system)
+    web.start()
+
     ui_t.join()
+    web.shutdown()
+
     if on_rpi:
         GPIO.cleanup()
+
+    
