@@ -82,7 +82,24 @@ def input_thread(event_queue,is_daemon):
     if not is_daemon:
         while True:
             i = input()
-            event_queue.put({'type':'input','val':i})
+            if i == 'w':
+                event_queue.put({'type':'input','val':'up','length':'short'})
+            elif i == 'ww':
+                event_queue.put({'type':'input','val':'up','length': 'long'})
+            elif i == 's':
+                event_queue.put({'type':'input','val':'down','length': 'short'})
+            elif i == 'ss':
+                event_queue.put({'type':'input','val':'down','length': 'long'})
+            elif i == 'a':
+                event_queue.put({'type':'input','val':'back'})
+            elif i == 'd':
+                event_queue.put({'type':'input','val':'select'})
+            elif i == 'q':
+                event_queue.put({'type':'input','val':'quit'})
+            else:
+                print(f"{i} is not valid input")
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
