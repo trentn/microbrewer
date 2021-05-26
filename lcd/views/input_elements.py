@@ -8,11 +8,6 @@ from .label_mixins import *
 from .content_elements import ScrollingContent
 
 
-class ValueReference(object):
-    def __init__(self, init_value):
-        self.value = init_value
-
-
 class DialInput(UI_Element, DynamicLabel):
     def __init__(self, label, dest):
         super().__init__(None,label)
@@ -222,4 +217,41 @@ class TextInput(UI_Element,ScrollingLabel):
         self.is_displayed = False
 
 
+class BurnerUI(ListInput):
+    def __init__(self, burner):
+        super().__init__(None,'Burner Control')
 
+        self.enable_line = ScrollingContent('','Enable Temperature Control')
+        self.enable_line.set_parent(self)
+        self.disable_line = ScrollingContent('','Disable Temperature Control')
+        self.disable_line.set_parent(self)
+        
+        self._options = ['On',self.enable_line]
+
+        self.burner = burner
+
+    def select(self, event_queue):
+        selected = self._options[self._select_line]
+        if selected == 'On':
+            self.burner.turn_on()
+            self._options[self._select_line] = 'Off'
+        elif selected == 'Off':
+            self.burner.turn_off()
+            self._options[self._select_line] = 'On'
+        elif type(selected) == ScrollingContent:
+            content = selected.init_content + selected.dynamic_content 
+            if content == 'Enable Temperature Control':
+                self.running = True
+                self.control_t = threading.Thread(target=self.burner.control_temperature)
+                self.control_t.start()
+                self._options = [self.disable_line]
+                self._select_line = 0
+                self.stop()
+                self.start(event_queue)
+            elif content == 'Disable Temperature Control':
+                self.running = False
+                self.control_t.join()
+                self._options = ['On',self.enable_line]
+                self._select_line = 1
+                self.stop()
+                self.start(event_queue)
