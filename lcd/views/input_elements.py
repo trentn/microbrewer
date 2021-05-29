@@ -241,7 +241,7 @@ class BurnerUI(ListInput):
         elif type(selected) == ScrollingContent:
             content = selected.init_content + selected.dynamic_content 
             if content == 'Enable Temperature Control':
-                self.running = True
+                self.burner.running = True
                 self.control_t = threading.Thread(target=self.burner.control_temperature)
                 self.control_t.start()
                 self._options = [self.disable_line]
@@ -249,7 +249,7 @@ class BurnerUI(ListInput):
                 self.stop()
                 self.start(event_queue)
             elif content == 'Disable Temperature Control':
-                self.running = False
+                self.burner.running = False
                 self.control_t.join()
                 self._options = ['On',self.enable_line]
                 self._select_line = 1
