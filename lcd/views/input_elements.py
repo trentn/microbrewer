@@ -41,11 +41,7 @@ class DialInput(UI_Element, DynamicLabel):
         return [self.label, str(self.value)]
 
     def update_content(self, event_queue):
-        line = ''
-        str_val = str(self._dest.value)
-        line = str_val+'0'*max(0,5-len(str_val)) 
-        line = line[:2]+'.'+line[2:]
-            
+        line = str(self._dest.value)
         if line != self.dynamic_content:
             self.dynamic_content = line
             self.content = self.init_content + self.dynamic_content
