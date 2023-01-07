@@ -183,6 +183,10 @@ class TextInput(UI_Element,ScrollingLabel):
     def back(self):
         self._dest.value = self._value
         return self._parent
+    
+    def back_space(self, event_queue):
+        self._value = self._value[:-1]
+        event_queue.put({'type':'display_update'})
 
     def select(self, event_queue):
         self._value = self._value + self._letters[self._letter_index]

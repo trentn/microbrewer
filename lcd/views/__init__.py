@@ -35,6 +35,9 @@ class UI_Element(object):
     def back(self):
         return self._parent
 
+    def back_space(self, event_queue):
+        pass
+
     def get_display(self):
         pass
 

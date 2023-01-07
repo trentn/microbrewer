@@ -84,6 +84,9 @@ class LCD(object):
                 self.current_elem = back
                 self.current_elem.start(self.event_queue)
 
+        elif event['val'] == 'back_space':
+            self.current_elem.back_space(self.event_queue)
+
     def update_display(self):
         self.display.clear()
         lines = self.current_elem.get_display()
@@ -147,7 +150,15 @@ class LCD(object):
         def back_button_callback(channel):
             time.sleep(0.04)
             if GPIO.input(channel):
-                event_queue.put({'type':'input','val':'back'})
+                t0 = time.perf_counter()
+                while GPIO.input(channel):
+                    t1 = time.perf_counter()
+                
+                t = t1-t0
+                if t > 0.5:
+                    event_queue.put({'type':'input','val':'back'})
+                else:
+                    event_queue.put({'type':'input','val':'back_space'})
 
         def select_button_callback(channel):
             time.sleep(0.04)
@@ -169,6 +180,8 @@ class LCD(object):
                     event_queue.put({'type':'input','val':'down','length': 'long'})
                 elif i == 'a':
                     event_queue.put({'type':'input','val':'back'})
+                elif i == 'aa':
+                    event_queue.put({'type':'input','val':'back_space'})
                 elif i == 'd':
                     event_queue.put({'type':'input','val':'select'})
                 elif i == 'q':
