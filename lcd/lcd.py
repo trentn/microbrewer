@@ -44,9 +44,8 @@ class LCD(object):
         self.current_elem.start(self.event_queue)
 
         if(self.console):
-            def print_display():
-                print() 
-                print(self.display)
+            def print_display(): 
+                print(f"\033[;H{self.display}", end="", flush=True)
             print_display()
         
         while True:
