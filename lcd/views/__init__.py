@@ -49,6 +49,7 @@ class UI_Element(object):
 
 from .content_elements import *
 from .input_elements import *
+from .dial_input import DialInput
 
 
 '''
